@@ -32,14 +32,12 @@ class EchoKernel(Kernel):
         }
 
     def do_complete(self, code, cursor_pos):
-        # print(code)
-        # print(cursor_pos)
         return {
             'status': 'ok',
             'matches': ['foo', 'bar'],
             'cursor_start': cursor_pos,
             'cursor_end': cursor_pos,
-            'metadata': {}
+            'metadata': {'foo': 'asdfasdf'}
         }
 
 

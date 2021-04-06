@@ -1,3 +1,9 @@
+"""
+Generate all available Azure CLI commands, parameters and help
+"""
+
+import json
+
 from azure.cli.core import AzCli, MainCommandsLoader
 from azure.cli.core._help import AzCliHelp
 from azure.cli.core.commands import AzCliCommandInvoker
@@ -13,13 +19,25 @@ def main():
                    help_cls=AzCliHelp)
     create_invoker_and_load_cmds_and_args(az_cli)
     help_files = get_all_help(az_cli)
+    commands = []
     for help_file in help_files:
-        print(help_file.command)
-        print(help_file.short_summary)
+        if not help_file.command:
+            continue
+        command = {
+            'command': help_file.command,
+            'help': help_file.short_summary
+        }
         if hasattr(help_file, 'parameters'):
+            command['parameters'] = []
             for parameter in help_file.parameters:
-                print(parameter.name, parameter.short_summary)
-        print()
+                for name in parameter.name_source:
+                    command['parameters'].append({
+                        'name': name,
+                        'help': parameter.short_summary
+                    })
+        commands.append(command)
+    with open('commands.txt', 'w', encoding='utf8') as f:
+        f.write(json.dumps(commands, indent=2))
 
 
 if __name__ == '__main__':
