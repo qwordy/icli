@@ -20,7 +20,7 @@ class Node:
 class Parameter:
     def __init__(self, name='', help=''):
         # Parameter name
-        self.name = name,
+        self.name = name
         # Parameter help
         self.help = help
 
@@ -34,21 +34,29 @@ class Completer:
         for command in commands:
             logger.error(command['command'])
             self._insert(command)
-        logger.error(self.root)
+        # logger.debug(self.root)
 
     def complete(self, code):
         """
         Code auto completion
         :param code:
-        :return: matches, metadata
+        :return: matches, cursor_start, metadata
         """
         tokens = code.split()
         if code[-1] == ' ':
             tokens.append('')
         cursor_start = len(code) - len(tokens[-1])
 
-        node = self.root
+        # Find complete command range
+        command_len = len(tokens) - 1
         for i in range(len(tokens) - 1):
+            if tokens[i][0] == '-':
+                command_len = i
+                break
+
+        # Match command
+        node = self.root
+        for i in range(command_len):
             find = False
             for child in node.children:
                 if tokens[i] == child.word:
@@ -57,6 +65,7 @@ class Completer:
                     break
             if not find:
                 return None
+
         # Match last word
         matches = []
         metadata = {}
@@ -65,6 +74,10 @@ class Completer:
             if child.word.startswith(word):
                 matches.append(child.word)
                 metadata[child.word] = child.help
+        for p in node.parameters:
+            if p.name.startswith(word):
+                matches.append(p.name)
+                metadata[p.name] = p.help
         if matches:
             return matches, cursor_start, metadata
         return None
@@ -72,6 +85,7 @@ class Completer:
     def _insert(self, command):
         tokens = command['command'].split()
         help = command['help']
+        parameters = command['parameters']
         node = self.root
         for token in tokens:
             find = False
@@ -82,6 +96,7 @@ class Completer:
                     break
             if not find:
                 child = Node(word=token)
+                child.parameters = [Parameter(p['name'], p['help']) for p in parameters]
                 node.children.append(child)
                 node = child
         node.help = help

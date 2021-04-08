@@ -5,7 +5,7 @@ from ipykernel.kernelbase import Kernel
 from completer import Completer
 
 
-class EchoKernel(Kernel):
+class AzureCLIKernel(Kernel):
     implementation = 'Azure CLI'
     implementation_version = '0.1'
     language = 'Azure CLI'
@@ -60,4 +60,4 @@ class EchoKernel(Kernel):
 
 if __name__ == '__main__':
     from ipykernel.kernelapp import IPKernelApp
-    IPKernelApp.launch_instance(kernel_class=EchoKernel)
+    IPKernelApp.launch_instance(kernel_class=AzureCLIKernel)
