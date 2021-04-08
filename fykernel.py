@@ -2,14 +2,20 @@ import subprocess
 
 from ipykernel.kernelbase import Kernel
 
+from completer import Completer
+
 
 class EchoKernel(Kernel):
-    implementation = 'Echo'
-    implementation_version = '1.0'
-    language = 'no-op'
+    implementation = 'Azure CLI'
+    implementation_version = '0.1'
+    language = 'Azure CLI'
     language_version = '0.1'
     language_info = {'mimetype': 'text/plain'}
-    banner = "Echo kernel - as useful as a parrot"
+    banner = "Azure CLI kernel"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.completer = Completer()
 
     def do_execute(self, code, silent, store_history=True, user_expressions=None,
                    allow_stdin=False):
@@ -32,12 +38,23 @@ class EchoKernel(Kernel):
         }
 
     def do_complete(self, code, cursor_pos):
+        # print(code, cursor_pos)
+        default = {
+            'status': 'ok',
+            'matches': [],
+            'cursor_start': 0,
+            'cursor_end': cursor_pos,
+            'metadata': {},
+        }
+        result = self.completer.complete(code[:cursor_pos])
+        if result is None:
+            return default
         return {
             'status': 'ok',
-            'matches': ['foo', 'bar'],
-            'cursor_start': cursor_pos,
+            'matches': result[0],
+            'cursor_start': result[1],
             'cursor_end': cursor_pos,
-            'metadata': {'foo': 'asdfasdf'}
+            'metadata': result[2]
         }
 
 
