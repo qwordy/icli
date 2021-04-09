@@ -12,8 +12,9 @@ class Node:
         self.word = word
         # Help of the command
         self.help = help
+        # Parameters
         self.parameters = []
-        # [Node]
+        # Node
         self.children = []
 
 
@@ -67,13 +68,17 @@ class Completer:
                 return None
 
         # Match last word
+        # Matched words including commands and parameters
         matches = []
+        # Extra message. {candidate: message}
         metadata = {}
         word = tokens[-1]
+        # Command
         for child in node.children:
             if child.word.startswith(word):
                 matches.append(child.word)
                 metadata[child.word] = child.help
+        # Parameter
         for p in node.parameters:
             if p.name.startswith(word):
                 matches.append(p.name)
