@@ -7,7 +7,7 @@ from jupyter_client.kernelspec import KernelSpecManager
 from IPython.utils.tempdir import TemporaryDirectory
 
 kernel_json = {
-    "argv": [sys.executable, "-m", "Azure CLI kernel", "-f", "{connection_file}"],
+    "argv": [sys.executable, "-m", "fykernel", "-f", "{connection_file}"],
     "display_name": "Azure CLI",
     "language": "Azure CLI"
 }
@@ -21,7 +21,7 @@ def install_my_kernel_spec(user=True, prefix=None):
         # TODO: Copy resources once they're specified
 
         print('Installing Azure CLI kernel spec')
-        KernelSpecManager().install_kernel_spec(td, 'AzureCLI', user=user, prefix=prefix)
+        KernelSpecManager().install_kernel_spec(td, 'azurecli', user=user, prefix=prefix)
 
 
 def _is_root():
